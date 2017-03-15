@@ -15,8 +15,7 @@ class App extends React.Component {
                 this.setState(
                     { data : data ,
                         contentList:contentList,
-                        content:contentList[0],
-                        nextLink:contentList[1]
+                        viewContent:contentList[0],
                     }
                 );
             }, function(res){
@@ -31,47 +30,51 @@ class App extends React.Component {
             data : {},
             content:{},
             contentList:[],
-            nextLink:{},
-            prevLink:{}
+            index:0
         };
         this.onNext = this.onNext.bind(this);
         this.onPrev = this.onPrev.bind(this);
     }
 
-    onNext(){
-        console.log(this.state.nextLink);
-        var currentIndex = this.state.nextLink.positionIndex;
-        var nextIndex = (currentIndex < this.state.contentList.length -1)? currentIndex+1:currentIndex;
-        var nextLink = this.state.contentList[nextIndex];
-        var nextContent = this.state.contentList[currentIndex];
-        var currentContent = this.state.content;
+    setViewData(prevLink, content, nextLink){
         this.setState({
             nextLink :nextLink,
-            content:nextContent,
-            prevLink:currentContent
-        });
-    }
-
-    onPrev(){
-        console.log(this.state.prevLink);
-        var targetIndex = this.state.prevLink.positionIndex;
-        var prevIndex = (targetIndex < 0)? targetIndex-1:targetIndex;
-        var prevLink = this.state.contentList[prevIndex];
-        var content = this.state.contentList[targetIndex];
-        var currentContent = this.state.content;
-        this.setState({
-
-            nextLink :currentContent,
             content:content,
             prevLink:prevLink
         });
     }
+
+    onNext(){
+        console.log(this.state.nextLink);
+        var currentLinkIndex = this.state.nextLink.positionIndex;
+        var nextLinkIndex = currentLinkIndex < this.state.contentList.length ? currentLinkIndex+1:currentLinkIndex ;
+        var nextLink = this.state.contentList[nextLinkIndex];
+        var content = this.state.contentList[currentLinkIndex];
+        var prevLink = this.state.content;
+        this.setViewData(prevLink, content, nextLink);
+
+
+    }
+
+    onPrev(){
+        console.log("prev link",this.state.prevLink);
+        var currentLinkIndex = this.state.prevLink.positionIndex;
+        var nextLinkIndex = currentLinkIndex > 0 ? currentLinkIndex - 1:currentLinkIndex;
+        console.log("prev", nextLinkIndex);
+        var prevLink = this.state.contentList[nextLinkIndex];
+        var content = this.state.contentList[currentLinkIndex];
+        var nextLink = this.state.content;
+        console.log("content",content);
+        this.setViewData(prevLink, content, nextLink);
+    }
+
 
 
     render () {
         return (
             <div className="container">
                <div className="header"><h2>{this.state.data.title}</h2></div>
+                <p>{this.state.content.title} {this.state.content.positionIndex}</p>
                 <ContentSection data={this.state.content}/>
                 <div className="footer">
                     <button className="link prev" onClick={this.onPrev}>
